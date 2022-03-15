@@ -1,0 +1,3 @@
+# dataset_path: ./dataset
+data_path: ./dataset/data
+label_path: ./dataset/label/index
