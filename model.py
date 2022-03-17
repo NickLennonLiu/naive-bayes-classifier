@@ -1,8 +1,9 @@
 import pickle
 
 import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
+import match
 from dataloader import Dataloader
 
 
@@ -12,9 +13,11 @@ class TextFeatureExtraction:
         self.vocabulary_volume = args.vocabulary_volume
 
         if args.word_model == 'bow':
-            self.model = CountVectorizer(max_features=args.vocabulary_volume)
+            self.model = CountVectorizer(max_features=args.vocabulary_volume,
+                                         ngram_range=(1, args.n_gram))
         elif args.word_model == 'tf-idf':
-            Exception()
+            self.model = TfidfVectorizer(max_features=args.vocabulary_volume,
+                                         ngram_range=(1, args.n_gram))
         print("Generated a vectorizer of {} with {} vocabulary".format(args.word_model, args.vocabulary_volume))
 
 
@@ -106,7 +109,7 @@ class NBC:
 
     def feature_extraction(self, raw):
         text_feature = self.text_feature.transform(raw).toarray()
-        # test_feature = np.zeros((len(raw), 3))
+        # TODO: match feature
 
         feature = np.concatenate([text_feature], 1)
         return feature

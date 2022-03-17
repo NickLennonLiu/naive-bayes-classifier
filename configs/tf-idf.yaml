@@ -1,0 +1,10 @@
+# dataset_path: ./dataset
+data_path: ./dataset/data
+label_path: ./dataset/label/index
+phase: full
+alpha: 1
+beta: 1
+seed: 1
+vocabulary_volume: 1000
+save_result: ./workdir/result_tf-idf.txt
+word_model: tf-idf
