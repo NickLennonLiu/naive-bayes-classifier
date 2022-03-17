@@ -29,6 +29,7 @@ class Dataloader:
         self.fold = list(range(0, len(self), int(len(self) / self.k_fold)))
         self.fold[-1] = len(self)
         print("Loaded {} data".format(len(self)))
+        print("Random seed: {}".format(self.random_seed))
 
     def idx_to_path(self, idx: str):
         return os.path.join(self.data_path, *idx.split('_'))
@@ -56,7 +57,10 @@ class Dataloader:
         return self.label[idx]
 
     def __getitem__(self, idx):
-        return self.raw_data[idx], self.label[idx]
+        if isinstance(idx, list):
+            return [(self.raw_data[i], self.label[i]) for i in idx]
+        else:
+            return self.raw_data[idx], self.label[idx]
 
     def __len__(self):
         return len(self.raw_idx)
@@ -75,6 +79,13 @@ class Dataloader:
                 train_idx += self.get_fold_idx(i)
         return train_idx
 
-    def get_test_fold(self, idx):
-        return self.get_fold_idx(idx)
 
+    def get_test_fold(self, idx):
+        test_idx = self.get_fold_idx(idx)
+        return test_idx
+
+    def get_ham(self):
+        return [i for i in self.raw_idx if self.label[i] == 'ham']
+
+    def get_spam(self):
+        return [i for i in self.raw_idx if self.label[i] == 'spam']

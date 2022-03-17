@@ -1,0 +1,7 @@
+# dataset_path: ./dataset
+data_path: ./dataset/data
+label_path: ./dataset/label/index
+phase: full
+alpha: 1
+seed: 1
+vocabulary_volume: 2000
