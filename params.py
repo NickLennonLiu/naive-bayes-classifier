@@ -22,7 +22,7 @@ def get_default_args():
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Naive Bayes Classification')
-    parser.add_argument('--config', default='./configs/config.yaml')
+    parser.add_argument('--config', default='./configs/baseline.yaml')
     parser.add_argument('--data_path')
     parser.add_argument('--label_path')
     parser.add_argument('--seed', type=int, default=233)
@@ -30,6 +30,10 @@ def get_parser():
     parser.add_argument('--weight', type=str, default=None)
     parser.add_argument('--save_weight', type=str, default=None)
     parser.add_argument('--phase', type=str, default='full', choices=['train', 'test', 'full'])
+    parser.add_argument('--save_result', type=str, default=None)
+
+    # Evaluation
+    parser.add_argument('--beta', type=float, default=1)
 
     # Naive Bayes Classifier
     parser.add_argument('--alpha', type=float, default=1)

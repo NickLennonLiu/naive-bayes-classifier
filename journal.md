@@ -40,3 +40,6 @@ https://scikit-learn.org/stable/modules/feature_extraction.html#stop-words
 - 衡量训练和测试时间
 - 完善流水线
 - 开始整点花活
+
+1. 现在我希望能够将结果输出到workdir中
+2. 并且希望能规范一下输出
