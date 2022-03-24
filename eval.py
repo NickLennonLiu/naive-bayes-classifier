@@ -38,5 +38,5 @@ def full(h,t,beta=1):
 
 def output(h, t, beta=1, f=sys.stdout):
     result = full(h,t,beta)
-    print("Acc: {:.4}, P: {:.4}, R: {:.4}, F: {:.4} (beta={})".format(*result, beta), file=f)
+    print("{:.4} {:.4} {:.4} {:.4}".format(*result, beta), file=f)
     return result

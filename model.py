@@ -1,7 +1,7 @@
 import pickle
 
 import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, TfidfTransformer
 
 import match
 from dataloader import Dataloader
@@ -53,6 +53,7 @@ class NBC:
         self.prior_h = None
         self.feature_size = None
         self.likelihood = None  # likelihood(h, D) = P(D|h)
+        self.content_feature = args.content_feature
 
         if args.weight is not None:
             self.load_weight(args.weight)
@@ -65,6 +66,8 @@ class NBC:
 
         self.prior_h = np.zeros(2)
         self.feature_size = self.text_feature.model.max_features
+        if self.content_feature:
+            self.feature_size += 3
         self.likelihood = np.zeros((2,self.feature_size))   # likelihood(h, D) = P(D|h)
 
         for idx, c in enumerate(['ham', 'spam']):
@@ -110,8 +113,11 @@ class NBC:
     def feature_extraction(self, raw):
         text_feature = self.text_feature.transform(raw).toarray()
         # TODO: match feature
+        content_feature = np.zeros((len(raw), 0))
+        if self.content_feature:
+            content_feature = match.content_feature(raw)
 
-        feature = np.concatenate([text_feature], 1)
+        feature = np.concatenate([text_feature, content_feature], 1)
         return feature
 
     def calc_likelihood(self, cnt, tot):

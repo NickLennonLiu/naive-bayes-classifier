@@ -18,6 +18,7 @@ class Dataloader:
         self.raw_idx = []
         self.train_idx = []
         self.test_idx = []
+        self.sample = args.sample
 
         if not self.random_seed:
             self.random_seed = int(random.random())
@@ -77,6 +78,9 @@ class Dataloader:
         for i in range(0, self.k_fold):
             if not i == idx:
                 train_idx += self.get_fold_idx(i)
+        if self.sample != 1:
+            assert(self.sample < 1)
+            train_idx = train_idx[:int(len(train_idx) * self.sample)]
         return train_idx
 
 

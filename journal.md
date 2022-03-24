@@ -75,3 +75,7 @@ https://scikit-learn.org/stable/modules/feature_extraction.html#stop-words
 
 1. 现在我希望能够将结果输出到workdir中
 2. 并且希望能规范一下输出
+
+## 3.23
+
+![](/home/junetheriver/Pictures/2022-03-23 21-36-32 的屏幕截图.png)

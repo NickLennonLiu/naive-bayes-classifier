@@ -34,7 +34,7 @@ def main(args):
             dataset = dataloader[train_idx]
             nbc.train(dataset)
             estimated_time = (datetime.now() - start).seconds
-            print("fold {} estimated time {}(s)".format(i, estimated_time), file=save_file)
+            print("fold {} estimated time {}(s)".format(i, estimated_time))
 
         if args.phase == 'test' or args.phase == 'full':
             test_idx = dataloader.get_test_fold(i)
@@ -52,12 +52,12 @@ def main(args):
 
     if args.phase != 'train':   # either test or full phase would want to store the result
         # Macro result
-        print("Macro: ", file=save_file)
+        # print("Macro: ", file=save_file)
         output(macro_result, macro_target, args.beta, save_file)
 
         # Micro result
-        print("Micro: ", file=save_file)
-        print("Acc: {:.4}, P: {:.4}, R: {:.4}, F: {:.4} (beta={})".
+        # print("Micro: ", file=save_file)
+        print("{:.4} {:.4} {:.4} {:.4}".
               format(*np.average(np.array(micro_evaluation), axis=0), args.beta), file=save_file)
 
     if save_file != sys.stdout:
@@ -65,4 +65,6 @@ def main(args):
 
 if __name__ == "__main__":
     _args = get_args()
+    _args.content_feature = True
+    _args.save_result = "./workdir/result_content_feature.txt"
     main(_args)

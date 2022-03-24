@@ -32,6 +32,10 @@ def get_parser():
     parser.add_argument('--phase', type=str, default='full', choices=['train', 'test', 'full'])
     parser.add_argument('--save_result', type=str, default=None)
 
+
+    # Analysis
+    parser.add_argument('--sample', type=float, default=1.0)
+
     # Evaluation
     parser.add_argument('--beta', type=float, default=1)
 
@@ -42,6 +46,9 @@ def get_parser():
     parser.add_argument('--word_model', type=str, default='bow', choices=['bow', 'tf-idf'])
     parser.add_argument('--n_gram', type=int, default=1)
     parser.add_argument('--vocabulary_volume', type=int, default=1000)
+
+    # Extra Features
+    parser.add_argument('--content_feature', type=bool, default=False)
 
     return parser
 
