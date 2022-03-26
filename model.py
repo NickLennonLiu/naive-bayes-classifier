@@ -1,29 +1,19 @@
 import pickle
-
 import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, TfidfTransformer
-
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 import match
-from dataloader import Dataloader
 
 
 class TextFeatureExtraction:
     def __init__(self, args):
         self.word_model = args.word_model
         self.vocabulary_volume = args.vocabulary_volume
-
-        if args.word_model == 'bow':
-            self.model = CountVectorizer(max_features=args.vocabulary_volume,
-                                         ngram_range=(1, args.n_gram))
-        elif args.word_model == 'tf-idf':
-            self.model = TfidfVectorizer(max_features=args.vocabulary_volume,
+        self.model = CountVectorizer(max_features=args.vocabulary_volume,
                                          ngram_range=(1, args.n_gram))
         print("Generated a vectorizer of {} with {} vocabulary".format(args.word_model, args.vocabulary_volume))
 
-
     def fit(self, corpus):
         self.model.fit(corpus)
-        # print(self.vocabulary_demo())
 
     def transform(self, raw):
         return self.model.transform(raw)
@@ -33,12 +23,6 @@ class TextFeatureExtraction:
 
     def vocabulary_demo(self):
         return self.model.vocabulary_.keys()
-
-    def reset(self):
-        if self.word_model == 'bow':
-            self.model = CountVectorizer(max_features=self.vocabulary_volume)
-        elif self.word_model == 'tf-idf':
-            Exception()
 
 
 def calc_prob_h(n, tot):
@@ -55,6 +39,11 @@ class NBC:
         self.likelihood = None  # likelihood(h, D) = P(D|h)
         self.content_feature = args.content_feature
 
+        if args.word_model == 'tf-idf':
+            self.tf_idf = TfidfTransformer()
+        else:
+            self.tf_idf = None
+
         if args.weight is not None:
             self.load_weight(args.weight)
 
@@ -62,7 +51,8 @@ class NBC:
 
     def train(self, dataset):
         # dataset: [(raw, label)]
-        self.text_feature.fit([i[0] for i in dataset])
+        # self.text_feature.fit([i[0] for i in dataset])
+        self.fit([i[0] for i in dataset])
 
         self.prior_h = np.zeros(2)
         self.feature_size = self.text_feature.model.max_features
@@ -77,7 +67,7 @@ class NBC:
             self.prior_h[idx] = calc_prob_h(cnt, len(dataset))
 
             # Likelihood
-            feature = self.feature_extraction([i[0] for i in raw_c])  # (batch_size, feature_size)
+            feature = self.transform([i[0] for i in raw_c])  # (batch_size, feature_size)
             cnt = feature.sum(axis=0)   # (feature_size)
             tot = np.sum(feature)   # TODO: consider what to do when there's more feature than word_vector
             for i, f in enumerate(cnt):
@@ -101,7 +91,7 @@ class NBC:
             self.text_feature = pickle.load(f)
 
     def eval(self, raw):
-        feature = self.feature_extraction(raw)
+        feature = self.transform(raw)
         result = np.zeros(len(raw))
 
         for i in range(len(raw)):
@@ -110,15 +100,22 @@ class NBC:
 
         return result
 
-    def feature_extraction(self, raw):
-        text_feature = self.text_feature.transform(raw).toarray()
-        # TODO: match feature
+    def fit(self, raw):
+        text_feature = self.text_feature.fit_transform(raw).toarray()
         content_feature = np.zeros((len(raw), 0))
         if self.content_feature:
             content_feature = match.content_feature(raw)
-
         feature = np.concatenate([text_feature, content_feature], 1)
-        return feature
+        if self.tf_idf:
+            self.tf_idf.fit(feature)
+
+    def transform(self, raw):
+        text_feature = self.text_feature.transform(raw).toarray()
+        content_feature = np.zeros((len(raw), 0))
+        if self.content_feature:
+            content_feature = match.content_feature(raw)
+        feature = np.concatenate([text_feature, content_feature], 1)
+        return feature if not self.tf_idf else self.tf_idf.transform(feature).toarray()
 
     def calc_likelihood(self, cnt, tot):
         # cnt: #{x | x = xk, y(x) = c}, tot: #{x | y(x) = c}
@@ -126,7 +123,7 @@ class NBC:
 
     def demo(self, raw):
         # raw: single raw text
-        feature = self.feature_extraction([raw])
+        feature = self.transform([raw])
         estimated = np.argmax([np.sum(feature[0] * self.likelihood[c]) + self.prior_h[c] for c in [0,1]])
         if estimated:
             return "spam"

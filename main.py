@@ -1,12 +1,12 @@
 import os
 import sys
-
-import numpy as np
 from datetime import datetime
+import numpy as np
 from dataloader import Dataloader
-from eval import accuracy, full, output
+from eval import output
 from model import NBC
 from params import get_args
+
 
 def touch_file(filename):
     folder, file = os.path.split(filename)
@@ -65,6 +65,4 @@ def main(args):
 
 if __name__ == "__main__":
     _args = get_args()
-    _args.content_feature = True
-    _args.save_result = "./workdir/result_content_feature.txt"
     main(_args)

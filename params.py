@@ -1,5 +1,4 @@
 import argparse
-import random
 
 import yaml
 
@@ -25,7 +24,7 @@ def get_parser():
     parser.add_argument('--config', default='./configs/baseline.yaml')
     parser.add_argument('--data_path')
     parser.add_argument('--label_path')
-    parser.add_argument('--seed', type=int, default=233)
+    parser.add_argument('--seed', type=int, default=1)
     parser.add_argument('--k_fold', type=int, default=5)
     parser.add_argument('--weight', type=str, default=None)
     parser.add_argument('--save_weight', type=str, default=None)
@@ -70,3 +69,6 @@ def get_args():
                 assert k in key
         parser.set_defaults(**default_arg)
     return parser.parse_args()
+
+if __name__ == "__main__":
+    get_parser().print_help()
